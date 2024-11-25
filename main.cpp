@@ -91,3 +91,4 @@ int main()
     GetInverse(matrix, order);
     return 0;
 }
+
