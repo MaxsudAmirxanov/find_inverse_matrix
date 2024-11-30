@@ -75,10 +75,96 @@ class Matrix:
 
         return new_matrix
 
+
+
+class ElementaryTransformations(Data):
+    def __init__(self, matrix) -> None:
+        self.matrix = matrix
+
+    def start(self):
+        self.draw_matrix(self.matrix)
+        print('')
+        for i in range(len(self.matrix)):
+
+            print(f'Деление всех элементов {i} строки на {self.matrix[i][i]}')
+            self.division_line(i, self.matrix[i][i])
+            self.draw_matrix(self.matrix)
+
+            
+
+            for j in range(i+1, len(self.matrix)):
+                index = -(self.matrix[j][i]) 
+                
+                # print(f'прибавление к всем элементов {j} строка на {index}')
+                print(f'умнажаем строку {i} на {index} и прибовлаем к строке {j}')
+                print(i, j, 'i j')
+                self.adding_line_2( i, j, index)
+                self.draw_matrix(self.matrix)
+        
+        # for i in reversed(range(len(self.matrix))):
+
+        #     print(f'Деление всех элементов {i} строки на {self.matrix[i][i]}')
+        #     self.division_line(i, self.matrix[i][i])
+        #     self.draw_matrix(self.matrix)
+
+            
+
+        #     for j in reversed(range(i+1, len(self.matrix))):
+        #         index = -(self.matrix[j][i]) 
+                
+        #         # print(f'прибавление к всем элементов {j} строка на {index}')
+        #         print(f'умнажаем строку {i} на {index} и прибовлаем к строке {j}')
+        #         print(i, j, 'i j')
+        #         self.adding_line_2( i, j, index)
+        #         self.draw_matrix(self.matrix)
+
+
+
+        self.draw_matrix(self.matrix)
+        print(1111)
+        print(self.matrix)
+
+    def multiply_line(self, line_number, number ):
+        'умножение какойто строки '
+        for index, integer in enumerate(self.matrix[line_number]):
+            self.matrix[line_number][index] = self.matrix[line_number][index] * number
+            if self.matrix[line_number][index] * number in [-0.0, -0]:
+                self.matrix[line_number][index] = 0
+    
+
+    def division_line(self, line_number, number ):
+        'деление какойто строки '
+        for index, integer in enumerate(self.matrix[line_number]):
+            self.matrix[line_number][index] = self.matrix[line_number][index] / number
+            if self.matrix[line_number][index] / number in [-0.0, -0] :
+                self.matrix[line_number][index] = 0
+    
+        # print(self.matrix)
+
+    def adding_line(self, line_number, number, over):
+        for index, integer in enumerate(self.matrix[line_number]):
+            # for i in self.matrix[over]:
+
+            self.matrix[line_number][index] = self.matrix[line_number][index]   + number
+
+    def adding_line_2(self, x_from, x_to, number):
+        'c x_from прибавить на x_to'
+        for index, i in enumerate(self.matrix[x_from]):
+            # print(i)
+            self.matrix[x_to][index] =  self.matrix[x_to][index] +i*number
+            if (self.matrix[x_to][index] +i*number) in [-0.0, -0]:
+                self.matrix[x_to][index] = 0
+    
+
+
+print(0.5*-1.0)
 data = Data('input')
 
 matrix = Matrix(data.return_matrix())
 
-
+m = ElementaryTransformations(data.return_matrix())
+m.start()
+print([1,2,3]*3)
+print(0.5*-1.0)
 # data.return_matrix()
-data.draw_matrix(matrix.create_single_matrix())
+# data.draw_matrix(matrix.create_single_matrix())
