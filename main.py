@@ -85,8 +85,51 @@ class ElementaryTransformations(Data):
         self.draw_matrix(self.matrix)
         print('')
         for i in range(len(self.matrix)):
-
+            print('Нахождение единички в диагонали')
             print(f'Деление всех элементов {i} строки на {self.matrix[i][i]}')
+
+            'Логика Элемент. перобро. для диагонали, превращение в единичку'
+            # if self.matrix[i][i] != 1:
+            #     try:
+            #         if self.matrix[i-1][i] > self.matrix[i][i]:
+            #             k = self.matrix[i-1][i] % self.matrix[i][i]
+            #             print(f'строку {i-1} делю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
+            #             self.division_line_2(i-1, i, k)
+
+            #         elif self.matrix[i-1][i] < self.matrix[i][i]:
+            #             k = self.matrix[i][i] % self.matrix[i-1][i]
+            #             self.division_line_2(i+1, i, k)
+            #         else:
+            #             print('Не получилось')
+            #             exit()
+            #     except(IndexError):
+            #         pass
+                    # if self.matrix[i-1][i] > self.matrix[i][i]:
+                    #     k = self.matrix[i-1][i] % self.matrix[i][i]
+                    #     self.division_line_2(i+1, i, k)
+                    # elif self.matrix[i-1][i] < self.matrix[i][i]:
+                    #     k = self.matrix[i][i] % self.matrix[i-1][i]
+                    #     self.division_line_2(i+1, i, k)
+                    # else:
+                    #     print('Не получилось')
+                    #     exit()
+
+
+                # for k in range(i+1, len(self.matrix)):
+                #     if self.matrix[k][i]%self.matrix[i][i] == 1:
+                #         print(f'строку {k} делю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
+                #         self.division_line_2(i, k, self.matrix[k][i]//self.matrix[i][i] )
+                #         break
+
+                #     elif self.matrix[i][i]%self.matrix[k][i] == 1:
+                #         print(f'строку {k} умножаю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
+                #         self.multiply_line_2(i, k, self.matrix[i][i] //self.matrix[k][i])
+                #         break
+                #     else:
+                #         print('Не нашлось ')
+                #         exit()
+
+
             self.division_line(i, self.matrix[i][i])
             self.draw_matrix(self.matrix)
 
@@ -155,6 +198,21 @@ class ElementaryTransformations(Data):
             if (self.matrix[x_to][index] +i*number) in [-0.0, -0]:
                 self.matrix[x_to][index] = 0
     
+    def multiply_line_2(self, x_from, x_to, number):
+        'умножаем x_from на x_to'
+        for index, i in enumerate(self.matrix[x_from]):
+            # print(i)
+            self.matrix[x_to][index] =  self.matrix[x_to][index] +i*number
+            if (self.matrix[x_to][index] +i*number) in [-0.0, -0]:
+                self.matrix[x_to][index] = 0
+
+    def division_line_2(self, x_from, x_to, number):
+        'деление x_from / x_to'
+        for index, i in enumerate(self.matrix[x_from]):
+            # print(i)
+            self.matrix[x_to][index] =  self.matrix[x_to][index] +i/number
+            if (self.matrix[x_to][index] +i/number) in [-0.0, -0]:
+                self.matrix[x_to][index] = 0
 
 
 print(0.5*-1.0)
@@ -163,6 +221,7 @@ data = Data('input')
 matrix = Matrix(data.return_matrix())
 
 m = ElementaryTransformations(data.return_matrix())
+
 m.start()
 print([1,2,3]*3)
 print(0.5*-1.0)
