@@ -173,7 +173,10 @@ class ElementaryTransformations(Data):
     def adding_line_2(self, x_from, x_to, number):
         'c x_from прибавить на x_to'
         for index, i in enumerate(self.matrix[x_from]):
-            # print(i)
+            print(index)
+            print(self.matrix[x_to])
+            print(self.matrix[x_to][index] )
+            print(enumerate(self.matrix[x_from]))
             self.matrix[x_to][index] =  self.matrix[x_to][index] +i*number
             if (self.matrix[x_to][index] +i*number) in [-0.0, -0]:
                 self.matrix[x_to][index] = 0
