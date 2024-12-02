@@ -85,49 +85,11 @@ class ElementaryTransformations(Data):
         self.draw_matrix(self.matrix)
         print('')
         for i in range(len(self.matrix)):
+
+            
             print('Нахождение единички в диагонали')
             print(f'Деление всех элементов {i} строки на {self.matrix[i][i]}')
 
-            'Логика Элемент. перобро. для диагонали, превращение в единичку'
-            # if self.matrix[i][i] != 1:
-            #     try:
-            #         if self.matrix[i-1][i] > self.matrix[i][i]:
-            #             k = self.matrix[i-1][i] % self.matrix[i][i]
-            #             print(f'строку {i-1} делю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
-            #             self.division_line_2(i-1, i, k)
-
-            #         elif self.matrix[i-1][i] < self.matrix[i][i]:
-            #             k = self.matrix[i][i] % self.matrix[i-1][i]
-            #             self.division_line_2(i+1, i, k)
-            #         else:
-            #             print('Не получилось')
-            #             exit()
-            #     except(IndexError):
-            #         pass
-                    # if self.matrix[i-1][i] > self.matrix[i][i]:
-                    #     k = self.matrix[i-1][i] % self.matrix[i][i]
-                    #     self.division_line_2(i+1, i, k)
-                    # elif self.matrix[i-1][i] < self.matrix[i][i]:
-                    #     k = self.matrix[i][i] % self.matrix[i-1][i]
-                    #     self.division_line_2(i+1, i, k)
-                    # else:
-                    #     print('Не получилось')
-                    #     exit()
-
-
-                # for k in range(i+1, len(self.matrix)):
-                #     if self.matrix[k][i]%self.matrix[i][i] == 1:
-                #         print(f'строку {k} делю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
-                #         self.division_line_2(i, k, self.matrix[k][i]//self.matrix[i][i] )
-                #         break
-
-                #     elif self.matrix[i][i]%self.matrix[k][i] == 1:
-                #         print(f'строку {k} умножаю на {self.matrix[k][i]//self.matrix[i][i]} и складываем к сироке {i}')
-                #         self.multiply_line_2(i, k, self.matrix[i][i] //self.matrix[k][i])
-                #         break
-                #     else:
-                #         print('Не нашлось ')
-                #         exit()
 
 
             self.division_line(i, self.matrix[i][i])
@@ -143,16 +105,35 @@ class ElementaryTransformations(Data):
                 print(i, j, 'i j')
                 self.adding_line_2( i, j, index)
                 self.draw_matrix(self.matrix)
+            
         
-        # for i in reversed(range(len(self.matrix))):
+        self.draw_matrix(self.matrix)
+        print(1111)
+        print(self.matrix)
 
+        print("\nНачинаем обратный проход для приведения матрицы к диагональному виду:")
+        for i in range(len(self.matrix) - 1, -1, -1):  # Идём с конца к началу
+            print(f"Обратный проход: Работа с {i}-й строкой")
+
+            for j in range(i - 1, -1, -1):  # Обнуляем элементы выше диагонали
+                if self.matrix[j][i] != 0:
+                    multiplier = -self.matrix[j][i]
+                    print(f"Обнуляем элемент в строке {j}, столбце {i} с помощью строки {i}:")
+                    self.adding_line_2(i, j, multiplier)
+                    self.draw_matrix(self.matrix)
+
+        # for i in reversed(range(len(self.matrix))):
+        #     print('Нахождение единички в диагонали')
         #     print(f'Деление всех элементов {i} строки на {self.matrix[i][i]}')
+
+
+
         #     self.division_line(i, self.matrix[i][i])
         #     self.draw_matrix(self.matrix)
 
             
 
-        #     for j in reversed(range(i+1, len(self.matrix))):
+        #     for j in reversed(range(i-1, len(self.matrix))):
         #         index = -(self.matrix[j][i]) 
                 
         #         # print(f'прибавление к всем элементов {j} строка на {index}')
@@ -160,9 +141,8 @@ class ElementaryTransformations(Data):
         #         print(i, j, 'i j')
         #         self.adding_line_2( i, j, index)
         #         self.draw_matrix(self.matrix)
-
-
-
+            
+        
         self.draw_matrix(self.matrix)
         print(1111)
         print(self.matrix)
@@ -223,7 +203,10 @@ matrix = Matrix(data.return_matrix())
 m = ElementaryTransformations(data.return_matrix())
 
 m.start()
-print([1,2,3]*3)
+print([1,2,3])
 print(0.5*-1.0)
-# data.return_matrix()
+
+for index, i in enumerate(matrix):
+    matrix[index] = i+data.return_matrix()[index]
+print(matrix)
 # data.draw_matrix(matrix.create_single_matrix())

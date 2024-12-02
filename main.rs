@@ -1,87 +1,113 @@
 use std::fs::File;
-use std::io::{self, BufRead};
+use std::io::{self, BufRead, Write};
 use std::path::Path;
 
-struct Data {
-    file_name: String,
+/// Чтение матрицы из файла
+fn read_matrix_from_file(filename: &str) -> Result<Vec<Vec<f64>>, String> {
+    let path = Path::new(filename);
+    let file = File::open(&path).map_err(|_| format!("Не удалось открыть файл: {}", filename))?;
+    let reader = io::BufReader::new(file);
+
+    let mut matrix = Vec::new();
+    for line in reader.lines() {
+        let line = line.map_err(|_| "Ошибка чтения строки из файла.".to_string())?;
+        let row: Vec<f64> = line
+            .split_whitespace()
+            .map(|s| s.parse::<f64>().map_err(|_| "Ошибка преобразования в число.".to_string()))
+            .collect::<Result<_, _>>()?;
+        matrix.push(row);
+    }
+
+    Ok(matrix)
 }
 
-impl Data {
-    fn new(file_name: &str) -> Self {
-        Self {
-            file_name: file_name.to_string(),
+/// Запись матрицы в файл
+fn write_matrix_to_file(filename: &str, matrix: &[Vec<f64>]) -> Result<(), String> {
+    let path = Path::new(filename);
+    let mut file = File::create(&path).map_err(|_| format!("Не удалось создать файл: {}", filename))?;
+    for row in matrix {
+        let row_str: Vec<String> = row.iter().map(|v| format!("{:.6}", v)).collect();
+        writeln!(file, "{}", row_str.join(" ")).map_err(|_| "Ошибка записи в файл.".to_string())?;
+    }
+    Ok(())
+}
+
+/// Метод Гаусса для вычисления обратной матрицы
+fn gaussian_elimination(matrix: &mut Vec<Vec<f64>>) -> Result<Vec<Vec<f64>>, String> {
+    let n = matrix.len();
+    let mut extended_matrix = vec![vec![0.0; 2 * n]; n];
+
+    // Создаем расширенную матрицу с единичной матрицей
+    for i in 0..n {
+        for j in 0..n {
+            extended_matrix[i][j] = matrix[i][j];
         }
+        extended_matrix[i][n + i] = 1.0;
     }
 
-    fn get_data(&self) -> io::Result<Vec<String>> {
-        let path = Path::new(&self.file_name);
-        let file = File::open(&path)?;
-        let lines = io::BufReader::new(file).lines();
-        lines.collect()
-    }
+    // Прямой ход
+    for i in 0..n {
+        // Поиск максимального элемента в текущем столбце
+        let mut max_row = i;
+        for k in i + 1..n {
+            if extended_matrix[k][i].abs() > extended_matrix[max_row][i].abs() {
+                max_row = k;
+            }
+        }
 
-    fn return_matrix(&self) -> io::Result<Vec<Vec<i32>>> {
-        let data = self.get_data()?;
-        let mut matrix = Vec::new();
+        // Проверка на вырожденность
+        if extended_matrix[max_row][i] == 0.0 {
+            return Err("Матрица вырожденная, обратная не существует.".to_string());
+        }
 
-        for line in data {
-            let mut row = Vec::new();
-            for ch in line.chars() {
-                if let Ok(num) = ch.to_string().parse::<i32>() {
-                    row.push(num);
+        // Перестановка строк
+        extended_matrix.swap(i, max_row);
+
+        // Нормализация строки
+        let pivot = extended_matrix[i][i];
+        for j in 0..2 * n {
+            extended_matrix[i][j] /= pivot;
+        }
+
+        // Обнуление всех остальных строк в текущем столбце
+        for k in 0..n {
+            if k != i {
+                let multiplier = extended_matrix[k][i];
+                for j in 0..2 * n {
+                    extended_matrix[k][j] -= multiplier * extended_matrix[i][j];
                 }
             }
-            if !row.is_empty() {
-                matrix.push(row);
+        }
+    }
+
+    // Извлечение обратной матрицы (правая часть расширенной матрицы)
+    let inverse_matrix = extended_matrix
+        .iter()
+        .map(|row| row[n..2 * n].to_vec())
+        .collect();
+
+    Ok(inverse_matrix)
+}
+
+fn main() {
+    let input_file = "input.txt";
+    let output_file = "output.txt";
+
+    match read_matrix_from_file(input_file) {
+        Ok(mut matrix) => {
+            println!("Чтение матрицы из файла: {} завершено.", input_file);
+
+            match gaussian_elimination(&mut matrix) {
+                Ok(inverse_matrix) => {
+                    if let Err(e) = write_matrix_to_file(output_file, &inverse_matrix) {
+                        eprintln!("Ошибка записи в файл: {}", e);
+                    } else {
+                        println!("Обратная матрица успешно записана в файл: {}", output_file);
+                    }
+                }
+                Err(e) => eprintln!("Ошибка вычисления обратной матрицы: {}", e),
             }
         }
-
-        Ok(matrix)
+        Err(e) => eprintln!("Ошибка чтения матрицы: {}", e),
     }
-
-    fn draw_matrix(matrix: &[Vec<i32>]) {
-        for row in matrix {
-            println!("{:?}", row);
-        }
-    }
-}
-
-struct Matrix {
-    matrix: Vec<Vec<i32>>,
-}
-
-impl Matrix {
-    fn new(matrix: Vec<Vec<i32>>) -> Self {
-        Self { matrix }
-    }
-
-    fn create_single_matrix(&self) -> Vec<Vec<i32>> {
-        let rows = self.matrix.len();
-        let cols = self.matrix[0].len();
-        let mut augmented_matrix = self.matrix.clone();
-
-        for i in 0..rows {
-            let mut identity_row = vec![0; cols];
-            identity_row[i] = 1;
-            augmented_matrix[i].extend(identity_row);
-        }
-
-        augmented_matrix
-    }
-}
-
-fn main() -> io::Result<()> {
-    let data = Data::new("input.txt");
-
-    let original_matrix = data.return_matrix()?;
-    println!("Original Matrix:");
-    Data::draw_matrix(&original_matrix);
-
-    let matrix = Matrix::new(original_matrix);
-    let augmented_matrix = matrix.create_single_matrix();
-
-    println!("\nAugmented Matrix:");
-    Data::draw_matrix(&augmented_matrix);
-
-    Ok(())
 }
